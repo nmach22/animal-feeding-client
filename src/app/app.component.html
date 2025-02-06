@@ -12,6 +12,10 @@
         <p class="animal-name">{{ masterAnimal.name }} - {{ masterStatus?.status }}  ({{masterStatus?.points}})</p>
       </div>
 
+      <div *ngIf="gratitudeMessage" class="gratitude-message">
+        <p>{{ gratitudeMessage }}</p>
+      </div>
+
       <div class="other-animals">
         <div *ngFor="let animal of otherAnimals" class="animal-card">
           <img

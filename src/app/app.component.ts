@@ -33,6 +33,7 @@ export class AppComponent {
   masterStatus: MasterStatus | null = null;
   previousStatus: string | null = null;
   pigImage = '';
+  gratitudeMessage: string = '';
 
   constructor(private animalService: AnimalService, private audioService: AudioService) {
   }
@@ -74,27 +75,20 @@ export class AppComponent {
   feedAnimal(animalId: number) {
     this.animalService.feedAnimal(animalId).subscribe({
       next: (response: MasterStatus) => {
-        // alert(`Animal ${animalId} has been fed!`);
         this.masterStatus = response;
-        if (this.masterStatus.status === 'HAPPY') {
-          if (this.previousStatus !== 'HAPPY') {
-            console.log('Master is happy');
-            this.play("ChemiSakartveloAqAris.mp3");
-          }
-        } else if (this.masterStatus.status === 'PUTIN') {
-          if (this.previousStatus !== 'PUTIN') {
-            console.log('Master is putin');
-            this.play("USSR.mp3");
-          }
-        } else {
-          if (this.previousStatus !== 'DEFAULT') {
-            console.log('Master is default');
-            this.stop();
+        this.handleMusic();
+        this.fetchAnimals();
+
+        for (let i = 0; i < this.animals.length; i++) {
+          if (this.animals[i].id === animalId) {
+            this.gratitudeMessage = `${this.animals[i].name}: Thank you Бидзина`;
+            break;
           }
         }
-        this.previousStatus = this.masterStatus.status;
 
-        this.fetchAnimals();
+        setTimeout(() => {
+          this.gratitudeMessage = '';
+        }, 5000);
       },
       error: (error) => alert(`Error feeding animal: ${error.message}`),
     });
@@ -108,5 +102,28 @@ export class AppComponent {
       }
       this.masterAnimal.image_url = this.masterAnimal.image_url === 'putin.avif' ? this.pigImage : 'putin.avif';
     }
+  }
+
+  private handleMusic() {
+    if (!this.masterStatus) {
+      return;
+    }
+    if (this.masterStatus.status === 'HAPPY') {
+      if (this.previousStatus !== 'HAPPY') {
+        console.log('Master is happy');
+        this.play("ChemiSakartveloAqAris.mp3");
+      }
+    } else if (this.masterStatus.status === 'PUTIN') {
+      if (this.previousStatus !== 'PUTIN') {
+        console.log('Master is putin');
+        this.play("USSR.mp3");
+      }
+    } else {
+      if (this.previousStatus !== 'DEFAULT') {
+        console.log('Master is default');
+        this.stop();
+      }
+    }
+    this.previousStatus = this.masterStatus.status;
   }
 }
