@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {AnimalService} from './services/animal.service';
 import {NgForOf, NgIf} from '@angular/common';
+import { AudioService } from './audio.service';
 
 
 interface Animal {
@@ -24,13 +25,23 @@ interface MasterStatus {
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
+
 export class AppComponent {
   animals: Animal[] = [];
   masterAnimal: Animal | null = null;
   otherAnimals: Animal[] = [];
   masterStatus: MasterStatus | null = null;
+  previousStatus: string | null = null;
 
-  constructor(private animalService: AnimalService) {
+  constructor(private animalService: AnimalService, private audioService: AudioService) {
+  }
+
+  play(music: string) {
+    this.audioService.playMusic(music).then(() => {});
+  }
+
+  stop() {
+    this.audioService.stopMusic();
   }
 
   ngOnInit() {
@@ -43,7 +54,6 @@ export class AppComponent {
       next: (response) => {
         this.animals = response.animals;
 
-        // Separate MASTER animal and other animals
         this.masterAnimal = this.animals.find(animal => animal.type === 'MASTER') || null;
         this.otherAnimals = this.animals.filter(animal => animal.type !== 'MASTER');
       },
@@ -52,22 +62,37 @@ export class AppComponent {
   }
 
   fetchMasterStatus() {
-    // Fetch status from the given URL for the MASTER animal
     this.animalService.getMasterStatus().subscribe({
       next: (response: MasterStatus) => {
-        // Now `response` is typed as MasterStatus, and we can safely access `status`
-        this.masterStatus = response; // Store the full response
+        this.masterStatus = response;
       },
       error: (error) => console.error('Error fetching MASTER status:', error),
     });
   }
 
-
   feedAnimal(animalId: number) {
     this.animalService.feedAnimal(animalId).subscribe({
       next: (response: MasterStatus) => {
-        // alert(`Animal ${animalId} has been fed! 🥕`);
+        // alert(`Animal ${animalId} has been fed!`);
         this.masterStatus = response;
+        if (this.masterStatus.status === 'HAPPY') {
+          if (this.previousStatus !== 'HAPPY') {
+            console.log('Master is happy');
+            this.play("ChemiSakartveloAqAris.mp3");
+          }
+        } else if (this.masterStatus.status === 'PUTIN') {
+          if (this.previousStatus !== 'PUTIN') {
+            console.log('Master is putin');
+            this.play("USSR.mp3");
+          }
+        } else {
+          if (this.previousStatus !== 'DEFAULT') {
+            console.log('Master is default');
+            this.stop();
+          }
+        }
+        this.previousStatus = this.masterStatus.status;
+
         this.fetchAnimals();
       },
       error: (error) => alert(`Error feeding animal: ${error.message}`),
