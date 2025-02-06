@@ -32,6 +32,7 @@ export class AppComponent {
   otherAnimals: Animal[] = [];
   masterStatus: MasterStatus | null = null;
   previousStatus: string | null = null;
+  pigImage = '';
 
   constructor(private animalService: AnimalService, private audioService: AudioService) {
   }
@@ -97,5 +98,15 @@ export class AppComponent {
       },
       error: (error) => alert(`Error feeding animal: ${error.message}`),
     });
+  }
+
+  toggleMasterAnimalImage() {
+    if (this.masterAnimal) {
+
+      if (this.pigImage === '') {
+        this.pigImage = this.masterAnimal.image_url;
+      }
+      this.masterAnimal.image_url = this.masterAnimal.image_url === 'putin.avif' ? this.pigImage : 'putin.avif';
+    }
   }
 }

@@ -7,7 +7,7 @@
           class="animal"
           [src]="masterAnimal.image_url"
           [alt]="masterAnimal.name"
-          (click)="feedAnimal(masterAnimal.id)"
+          (click)="toggleMasterAnimalImage()"
         />
         <p class="animal-name">{{ masterAnimal.name }} - {{ masterStatus?.status }}  ({{masterStatus?.points}})</p>
       </div>
