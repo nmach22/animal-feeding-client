@@ -81,7 +81,7 @@ export class AppComponent {
 
         for (let i = 0; i < this.animals.length; i++) {
           if (this.animals[i].id === animalId) {
-            this.gratitudeMessage = `${this.animals[i].name}: Thank you Бидзина`;
+            this.gratitudeMessage = `${this.animals[i].name}: Thank you Бидзина 🇷🇺🇷🇺🇷🇺`;
             break;
           }
         }
